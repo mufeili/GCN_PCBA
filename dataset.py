@@ -5,7 +5,7 @@ import torch
 from dgl.data.chem.utils import smile_to_bigraph
 from itertools import accumulate
 
-from .utils import mkdir_p
+from utils import mkdir_p
 
 class PCBADataset(object):
     """
