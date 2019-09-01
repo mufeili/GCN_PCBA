@@ -55,15 +55,15 @@ def main(args):
     test_loader = DataLoader(testset, batch_size=args['batch_size'], collate_fn=collate_molgraphs)
 
     if args['model'] == 'GCN':
-        model = model_zoo.chem.GCNClassifier(in_feats=args['in_feats'],
-                                             gcn_hidden_feats=args['gcn_hidden_feats'],
-                                             classifier_hidden_feats=args['classifier_hidden_feats'],
+        model = model_zoo.chem.GCNClassifier(in_feats=74,
+                                             gcn_hidden_feats=[128, 128],
+                                             classifier_hidden_feats=128,
                                              n_tasks=dataset.n_tasks)
     elif args['model'] == 'GAT':
-        model = model_zoo.chem.GATClassifier(in_feats=args['in_feats'],
-                                             gat_hidden_feats=args['gat_hidden_feats'],
-                                             num_heads=args['num_heads'],
-                                             classifier_hidden_feats=args['classifier_hidden_feats'],
+        model = model_zoo.chem.GATClassifier(in_feats=74,
+                                             gat_hidden_feats=[64, 64],
+                                             num_heads=[4, 4],
+                                             classifier_hidden_feats=128,
                                              n_tasks=dataset.n_tasks)
 
     loss_criterion = BCEWithLogitsLoss(pos_weight=torch.tensor(

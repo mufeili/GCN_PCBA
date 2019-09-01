@@ -39,6 +39,7 @@ class PCBADataset(object):
         with open(file, 'r') as f:
             headline = f.readline().strip()
             self.tasks = headline.split('\t')[1:]
+            self.n_tasks = len(self.tasks)
             self.num_mols = 0
 
             while True:
