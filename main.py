@@ -10,6 +10,15 @@ from torch.utils.data import DataLoader
 from dataset import PCBADataset, split_dataset
 from utils import Meter, EarlyStopping, collate_molgraphs, set_random_seed
 
+def update_default_configure(args):
+    default_configure = {
+        'batch_size': 128,
+        'lr': 1e-3,
+        'patience': 10,
+        'atom_data_field': 'h'
+    }
+    args.update(default_configure)
+
 def run_a_train_epoch(args, epoch, model, data_loader, loss_criterion, optimizer):
     model.train()
     train_meter = Meter()
@@ -89,8 +98,7 @@ def main(args):
     t1 = time.time()
     print('It took {} to finish training for an epoch.'.format(datetime.timedelta(seconds=t1 - t0)))
 
-    if not args['pre_trained']:
-        stopper.load_checkpoint(model)
+    stopper.load_checkpoint(model)
     test_roc_auc = run_an_eval_epoch(args, model, test_loader)
     print('test roc-auc score {:.4f}'.format(test_roc_auc))
 
@@ -100,12 +108,11 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Molecule Classification')
     parser.add_argument('-m', '--model', type=str, choices=['GCN', 'GAT'],
                         help='Model to use')
-    parser.add_argument('-c', '--chunk-size', type=int, default=10000,
+    parser.add_argument('-c', '--chunk-size', type=int, default=1,
                         help='Number of preprocessed molecules in each pickle file')
-    parser.add_argument('-b', '--batch-size', type=int, default=128,
-                        help='Batch size for data loading')
     parser.add_argument('-n', '--num-epochs', type=int, default=1,
                         help='Max number of epochs to train the model')
     args = parser.parse_args().__dict__
+    update_default_configure(args)
 
     main(args)
