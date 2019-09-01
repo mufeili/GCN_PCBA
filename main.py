@@ -110,7 +110,7 @@ if __name__ == '__main__':
                         help='Model to use')
     parser.add_argument('-c', '--chunk-size', type=int, default=1,
                         help='Number of preprocessed molecules in each pickle file')
-    parser.add_argument('-n', '--num-epochs', type=int, default=1,
+    parser.add_argument('-n', '--num-epochs', type=int, default=100,
                         help='Max number of epochs to train the model')
     args = parser.parse_args().__dict__
     update_default_configure(args)
