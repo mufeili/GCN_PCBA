@@ -57,7 +57,7 @@ def main(args):
     args['device'] = "cuda" if torch.cuda.is_available() else "cpu"
     set_random_seed()
 
-    dataset = PCBADataset(chunk_size=args['chunk_size'])
+    dataset = PCBADataset(chunk_size=args['chunk_size'], )
     trainset, valset, testset = split_dataset(dataset)
     train_loader = DataLoader(trainset, batch_size=args['batch_size'], collate_fn=collate_molgraphs)
     val_loader = DataLoader(valset, batch_size=args['batch_size'], collate_fn=collate_molgraphs)

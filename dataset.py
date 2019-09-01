@@ -196,7 +196,7 @@ def split_dataset(dataset, frac_list=None):
         Consists of three subsets for training, validation and test
     """
     if frac_list is None:
-        frac_list = [0.8, 0.1, 0.1]
+        frac_list = [0.6, 0.2, 0.2]
 
     frac_list = np.array(frac_list)
     assert np.allclose(np.sum(frac_list), 1.), \
