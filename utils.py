@@ -4,7 +4,8 @@ import numpy as np
 import os
 import random
 import torch
-from sklearn.metrics import roc_auc_score
+from sklearn.metrics import roc_auc_score, precision_recall_curve, auc
+
 
 def mkdir_p(path, log=True):
     """Create a directory for the specified path.
@@ -90,6 +91,24 @@ class Meter(object):
             task_y_true = y_true[:, task][task_w != 0].cpu().numpy()
             task_y_pred = y_pred[:, task][task_w != 0].cpu().detach().numpy()
             total_score += roc_auc_score(task_y_true, task_y_pred)
+        return total_score / n_tasks
+
+    def prc_auc_averaged_over_tasks(self):
+        """Compute area under precision-recall curve."""
+        mask = torch.cat(self.mask, dim=0)
+        y_pred = torch.cat(self.y_pred, dim=0)
+        y_true = torch.cat(self.y_true, dim=0)
+        # Todo: support categorical classes
+        # This assumes binary case only
+        y_pred = torch.sigmoid(y_pred)
+        n_tasks = y_true.shape[1]
+        total_score = 0
+        for task in range(n_tasks):
+            task_w = mask[:, task]
+            task_y_true = y_true[:, task][task_w != 0].cpu().numpy()
+            task_y_pred = y_pred[:, task][task_w != 0].cpu().detach().numpy()
+            precision, recall, _ = precision_recall_curve(task_y_true, task_y_pred)
+            total_score += auc(recall, precision)
         return total_score / n_tasks
 
 class EarlyStopping(object):

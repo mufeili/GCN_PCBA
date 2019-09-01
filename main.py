@@ -37,9 +37,9 @@ def run_a_train_epoch(args, epoch, model, data_loader, loss_criterion, optimizer
         print('epoch {:d}/{:d}, batch {:d}/{:d}, loss {:.4f}'.format(
             epoch + 1, args['num_epochs'], batch_id + 1, len(data_loader), loss.item()))
         train_meter.update(logits, labels, mask)
-    train_roc_auc = train_meter.roc_auc_averaged_over_tasks()
-    print('epoch {:d}/{:d}, training roc-auc score {:.4f}'.format(
-        epoch + 1, args['num_epochs'], train_roc_auc))
+    train_prc_auc = train_meter.prc_auc_averaged_over_tasks()
+    print('epoch {:d}/{:d}, training prc-auc score {:.4f}'.format(
+        epoch + 1, args['num_epochs'], train_prc_auc))
 
 def run_an_eval_epoch(args, model, data_loader):
     model.eval()
@@ -51,7 +51,7 @@ def run_an_eval_epoch(args, model, data_loader):
             atom_feats, labels = atom_feats.to(args['device']), labels.to(args['device'])
             logits = model(bg, atom_feats)
             eval_meter.update(logits, labels, mask)
-    return eval_meter.roc_auc_averaged_over_tasks()
+    return eval_meter.prc_auc_averaged_over_tasks()
 
 def main(args):
     args['device'] = "cuda" if torch.cuda.is_available() else "cpu"
@@ -90,7 +90,7 @@ def main(args):
         # Validation and early stop
         val_roc_auc = run_an_eval_epoch(args, model, val_loader)
         early_stop = stopper.step(val_roc_auc, model)
-        print('epoch {:d}/{:d}, validation roc-auc score {:.4f}, best validation roc-auc score {:.4f}'.format(
+        print('epoch {:d}/{:d}, validation prc-auc score {:.4f}, best validation prc-auc score {:.4f}'.format(
             epoch + 1, args['num_epochs'], val_roc_auc, stopper.best_score))
         if early_stop:
             break
@@ -100,7 +100,7 @@ def main(args):
 
     stopper.load_checkpoint(model)
     test_roc_auc = run_an_eval_epoch(args, model, test_loader)
-    print('test roc-auc score {:.4f}'.format(test_roc_auc))
+    print('test prc-auc score {:.4f}'.format(test_roc_auc))
 
 if __name__ == '__main__':
     import argparse
