@@ -7,6 +7,8 @@ large to be loaded into memory at once.
 
 1. PyTorch
 2. DGL
+3. Scikit-learn
+4. RDKit
 
 ## Dataset and Task
 
