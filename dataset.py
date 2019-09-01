@@ -48,7 +48,7 @@ class PCBADataset(object):
                     break
                 self.num_mols += 1
                 if not preprocessed:
-                    print('Processing molecule {:d}\n'.format(self.num_mols))
+                    print('Processing molecule {:d}'.format(self.num_mols))
                     self._process_molecule(line)
 
         if not preprocessed:
@@ -167,10 +167,12 @@ class Subset(object):
             i in loss computation
         """
         if self._task_pos_weights is None:
+            print('Start computing positive weights...')
             task_total_count = torch.zeros(self.num_tasks)
             task_pos_count = torch.zeros(self.num_tasks)
 
             for i in self.indices:
+                print('Processing training molecule {:d}/{:d}'.format(i+1, len(self)))
                 s_i, g_i, label_i, mask_i = self.dataset[i]
                 task_total_count += mask_i
                 task_pos_count += label_i
