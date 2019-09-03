@@ -30,6 +30,12 @@ class PCBADataset(object):
         self.chunk_size = chunk_size
         if os.path.isdir(dir_processed):
             preprocessed = True
+            with open('data/processed/chunk_0.pkl', 'rb') as f:
+                self.graphs = pickle.load(f)
+            len_graph = len(self.graphs)
+            if len_graph != chunk_size:
+                print('Conflict: chunk_size should be %d' % len_graph )
+                self.chunk_size = len_graph
         else:
             preprocessed = False
             mkdir_p(dir_processed)
@@ -53,6 +59,9 @@ class PCBADataset(object):
 
         if not preprocessed:
             self._dump_chunk()
+
+        self.chunk_id = -1
+        self.graphs = []
 
     def _process_molecule(self, line):
         """
@@ -112,10 +121,12 @@ class PCBADataset(object):
             Binary mask for indicating the existence of labels
         """
         chunk_id = item // self.chunk_size
-        with open('data/processed/chunk_{:d}.pkl'.format(chunk_id), 'rb') as f:
-            graphs = pickle.load(f)
-            id_in_chunk = item % self.chunk_size
-            g = graphs[id_in_chunk]
+        if self.chunk_id != chunk_id:
+            with open('data/processed/chunk_{:d}.pkl'.format(chunk_id), 'rb') as f:
+                self.graphs = pickle.load(f)
+            self.chunk_id = chunk_id
+        id_in_chunk = item % self.chunk_size
+        g = self.graphs[id_in_chunk]
         return g.smile, g, g.labels, g.mask
 
 class Subset(object):
