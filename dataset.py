@@ -177,7 +177,12 @@ class Subset(object):
                 task_total_count += mask_i
                 task_pos_count += label_i
 
-            self._task_pos_weights = (task_total_count - task_pos_count) / task_pos_count
+            weights = torch.ones(self.num_tasks)
+            for t in range(self.num_tasks):
+                pos_count_t = float(task_pos_count[t])
+                if pos_count_t > 0:
+                    weights[t] = (float(task_total_count[t]) - pos_count_t) / pos_count_t
+            self._task_pos_weights = weights
 
         return self._task_pos_weights
 
